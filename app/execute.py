@@ -1,6 +1,18 @@
-from get_all_json_file_names import ProcessTextFromJsonFiles
+import sys
+import os
 
+# Obtém o diretório atual do arquivo execute.py
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-instancia_teste = ProcessTextFromJsonFiles("data")
+# Obtém o caminho absoluto para o diretório "utils"
+utils_path = os.path.join(current_dir, "utils")
 
-print(instancia_teste.process_text_dict())
+# Adiciona o diretório "utils" ao caminho de busca do Python
+sys.path.append(utils_path)
+
+# Importa a classe ProcessUiObjectsFiles do arquivo "process_json_files.py"
+from process_json_files import ProcessUiObjectsFiles
+
+instancia_teste = ProcessUiObjectsFiles("data")
+
+print(instancia_teste.extract_text_from_json_list())
