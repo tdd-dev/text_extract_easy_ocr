@@ -45,7 +45,7 @@ class ProcessUiObjectsFiles(str):
     def get_bound_list(self):
         return self.bounds_from_json
     
-    def get_text_list(self):
+    def get_words_list(self):
         return self.texts_from_json
 
     #Função que retorna elementos de texto e bounds dado um arquivo json de entrada
@@ -70,24 +70,24 @@ class ProcessUiObjectsFiles(str):
         return text_elements
 
     # def extract_text_elements(self,data):
-        text_elements = []
-        stack = [data]
+    #     text_elements = []
+    #     stack = [data]
         
-        while stack:
-            current = stack.pop()
+    #     while stack:
+    #         current = stack.pop()
             
-            if isinstance(current, dict):
-                if 'text' in current:
-                    text_element = {'text': current.get('text', ''), 'bounds': current.get('bounds', []), 'visible': current.get('visible-to-user', '')}
-                    if text_element['visible']:
-                        text_elements.append(text_element)
+    #         if isinstance(current, dict):
+    #             if 'text' in current:
+    #                 text_element = {'text': current.get('text', ''), 'bounds': current.get('bounds', []), 'visible': current.get('visible-to-user', '')}
+    #                 if text_element['visible']:
+    #                     text_elements.append(text_element)
                 
-                stack.extend(current.values())
+    #             stack.extend(current.values())
             
-            elif isinstance(current, list):
-                stack.extend(current)
+    #         elif isinstance(current, list):
+    #             stack.extend(current)
         
-        return text_elements
+    #     return text_elements
 
 
     # Extrai todos os textos de uma lista de json
@@ -120,7 +120,6 @@ class ProcessUiObjectsFiles(str):
                 id = os.path.splitext(file)[0]
                 # Armazena o dicionário enumerado no dicionário principal
                 result[id] = dict_texts
-                self.texts_from_json = result
 
         # # Imprime a saída com todos os elementos enumerados
         # for nome_arquivo, elementos in resultado.items():
@@ -132,6 +131,7 @@ class ProcessUiObjectsFiles(str):
         return result
 
     def extract_bounds_from_json_list(self):
+
         file_path_list = self.get_json_files(self)
         result = {}  # Dicionário para armazenar todos os dicionários enumerados
 
@@ -184,5 +184,8 @@ class ProcessUiObjectsFiles(str):
                 words = re.findall(r'\w+', subvalue)
                 processed_value[subkey] = words
             processed_dict[key] = processed_value
+
+        self.texts_from_json = processed_dict
+
         return processed_dict
 

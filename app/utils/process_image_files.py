@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
+import time
 
 
 class ProcessImageFiles(str):
@@ -92,7 +93,6 @@ class ProcessImageFiles(str):
                 
                 # Processar a imagem e obter a lista de textos detectados
                 text_list_ocr = self.get_text_with_easyocr(new_image_path)
-                
                 new_coordinates_dict[image_name][text_id] = text_list_ocr
         
         return new_coordinates_dict
