@@ -86,7 +86,7 @@ class OpenInterface(QWidget):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
         # Cria botao com texto
-        self.btn = QPushButton('START', self)
+        self.btn = QPushButton('START OCR', self)
         # botao começa desabilitado até inserir o path no input
         self.btn.setEnabled(False)
         # Disparar método on_click quando clicar no botao
