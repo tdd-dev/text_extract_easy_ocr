@@ -11,6 +11,7 @@ class OpenInterface(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.path = ""
         
         self.initUI()
 
@@ -101,14 +102,14 @@ class OpenInterface(QWidget):
 
 
     def enable_start_buttons(self):
-        path = self.input_text.text()
+        self.path = self.input_text.text()
         self.btn_ocr.setEnabled(False)
         self.btn_yolo.setEnabled(False)
-        if path == '' or path == ' ':
+        if self.path == '' or self.path == ' ':
             self.btn_ocr.setEnabled(False)
             self.btn_yolo.setEnabled(False)
             print("Mandatory field")
-        elif path.isnumeric():
+        elif self.path.isnumeric():
             self.btn_ocr.setEnabled(False)
             self.btn_yolo.setEnabled(False)
             print("Invalid path")
@@ -119,8 +120,8 @@ class OpenInterface(QWidget):
             self.btn_yolo.setEnabled(True)
 
     def start_ocr_process(self):
-        self.exec_utils = AccessUtils(path)
-        self.exec_utils.main(path)
+        self.exec_utils = AccessUtils(self.path)
+        self.exec_utils.main(self.path)
 
     def start_yolo_process(self):
         path = self.input_text.text()
