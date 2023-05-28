@@ -1,52 +1,14 @@
 import os
 import json
 import re
+import shutil
 
-class ProcessTesting():
+class ProcessTesting(str):
     
-    def __init__(self):
+    def __init__(self, path):
+        self.path = path
         self.words_results = {}
     
-        '''
-        {
-                
-                "13":
-                        {
-                        "0": "PASS"
-                        "1": "FAIL"
-                        "2": "PASS"
-                        }
-                "17":
-                        {
-                        "0": "PASS"
-                        "1": "FAIL"
-                        "2": "PASS"
-                        }
-
-        }
-        '''
-
-    # def get_test_results_by_text(self):
-    #     return 0
-
-        '''
-        {
-                
-                "13":
-                        {
-                        "This is a test": "PASS"
-                        "This is a element from RICO": "FAIL"
-                        "Sei la": "PASS"
-                        }
-                "17":
-                        {
-                        "Top demais": "PASS"
-                        "Luiz Felipe": "FAIL"
-                        "Lucas Santos": "PASS"
-                        }
-        }
-        '''
-
     def get_test_results_by_image_name(self):
         processed_dict = {}
 
@@ -80,40 +42,58 @@ class ProcessTesting():
         self.words_results = result
         return result
 
+    def get_elements_with_fail(self):
+        elements_with_fail = {}
 
+        for key, value in self.words_results.items():
+            if "FAIL" in value.values():
+                elements_with_fail[key] = {}
 
-        '''
-            {
-                
-                "13":
-                        {
-                        "0": ["This", "is", "a", "test"]
-                        "1": ["This", "is", "a", "element"]
-                        "2": ["Luiz", "Eduardo"]
-                        }
-                "17":
-                        {
-                        "0": ["isso", "é", "um", "texto"]
-                        "1": ["ia", "é", "top"]
-                        "2": ["easy","ocr","é", "bom"]
-                        }
-            }
+                for subkey, subvalue in value.items():
+                    if subvalue == "FAIL":
+                        elements_with_fail[key][subkey] = subvalue
 
-
-            {
-                
-                "13":
-                        {
-                        "0": ["adad", This", "is", "a", "test","hd"]
-                        "1": ["This", "adsa", "is", "a", "element"]
-                        "2": ["Luiz", "Eduardo", "asbhdja"]
-                        }
-                "17":
-                        {
-                        "0": ["xxx", "isso", "ddd", "é", "um", "texto"]
-                        "1": ["ia", "sfls", "é", "top", "daa"]
-                        "2": ["easy","dsa", "ocr","é", "bom"]
-                        }
-            }
-        '''
+        return elements_with_fail
     
+    def organize_images(self):
+        test_results_path = os.path.join(self.path, "Test Results")
+
+        # Verifica se a pasta "Test Results" já existe
+        if not os.path.exists(test_results_path):
+            os.makedirs(test_results_path)
+
+        for folder, inner_dict in self.words_results.items():
+            folder_path = os.path.join(test_results_path, folder)
+            pass_folder = os.path.join(folder_path, "PASS")
+            fail_folder = os.path.join(folder_path, "FAIL")
+
+            # Verifica se a pasta "PASS" já existe
+            if not os.path.exists(pass_folder):
+                os.makedirs(pass_folder)
+
+            # Verifica se a pasta "FAIL" já existe
+            if not os.path.exists(fail_folder):
+                os.makedirs(fail_folder)
+
+            # Copia a imagem "mãe" para as pastas "PASS" e "FAIL"
+            original_image = f"{folder}.jpg"
+            shutil.copy2(os.path.join(self.path, original_image), pass_folder)
+            shutil.copy2(os.path.join(self.path, original_image), fail_folder)
+
+            for key, value in inner_dict.items():
+                image_name = f"new_{folder}_{key}.jpg"
+                source_path = os.path.join(self.path, folder, image_name)
+
+                if value == "PASS":
+                    destination_path = os.path.join(pass_folder, image_name)
+                elif value == "FAIL":
+                    destination_path = os.path.join(fail_folder, image_name)
+                else:
+                    continue
+
+                shutil.move(source_path, destination_path)
+        for folder, inner_dict in self.words_results.items():
+            folder_path = os.path.join(self.path, folder)
+            shutil.rmtree(folder_path)
+
+

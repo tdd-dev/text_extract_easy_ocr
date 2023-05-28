@@ -83,7 +83,7 @@ class OpenInterface(QWidget):
         self.input_text.move(200, 200)  # Seta posição do campo
         self.input_text.resize(300, 30)  # Seta tamanho do campo
         self.input_text.textChanged.connect(self.enable_start_buttons)
-        path = self.input_text.text()
+        self.path = self.input_text.text()
         # Button to start YoLo process
         self.btn_yolo = QPushButton('START YOLO', self)
         self.btn_yolo.move(390, 250)
@@ -124,8 +124,8 @@ class OpenInterface(QWidget):
         self.exec_utils.main(self.path)
 
     def start_yolo_process(self):
-        path = self.input_text.text()
-        self.execute = ProcessTextFromJsonFiles(path)
+        self.path = self.input_text.text()
+        self.execute = ProcessTextFromJsonFiles(self.path)
         print(json.dumps(self.execute.process_text_dict(),indent=4))
        
         
