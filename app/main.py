@@ -22,14 +22,20 @@ class AccessUtils(str):
     def main(self,path):
         instancia_teste = ProcessUiObjectsFiles(path)
         image = ProcessImageFiles(path)
-        testing = ProcessTesting()
+        testing = ProcessTesting(path)
 
         uiobjects_dict = instancia_teste.get_text_dict_in_words() #garantir que get_json_files() sempre retorne a lista igual para extract_text_from_json_list() e extract_bounds_from_json_list()
         instancia_teste.extract_bounds_from_json_list()
         image_dict = image.get_text_dict_in_words(instancia_teste.get_bound_list())
+        test_results = testing.get_test_results_by_words(uiobjects_dict, image_dict)
+
+
+        image.retest_with_kerasocr(testing.get_elements_with_fail())
+        image_dict = image.get_words_dict()
 
         test_results = testing.get_test_results_by_words(uiobjects_dict, image_dict)
         test_results_by_image = testing.get_test_results_by_image_name()
+        testing.organize_images()
 
         # print(json.dumps(image_dict, indent=4))
         # print("\n")
