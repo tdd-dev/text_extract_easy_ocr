@@ -31,13 +31,14 @@ class AccessUtils(str):
         test_results = testing.get_test_results_by_words(uiobjects_dict, image_dict)
         test_results_by_image = testing.get_test_results_by_image_name()
 
-        print(json.dumps(image_dict, indent=4))
-        print("\n")
-        print(json.dumps(uiobjects_dict, indent=4))
-        print("\n")
-        print(json.dumps(test_results, indent=4))
-        print("\n")
-        print(json.dumps(test_results_by_image, indent=4))
+        # print(json.dumps(image_dict, indent=4))
+        # print("\n")
+        # print(json.dumps(uiobjects_dict, indent=4))
+        # print("\n")
+        # print(json.dumps(test_results, indent=4))
+        # print("\n")
+        #print(test_results_by_image)
+        return json.dumps(test_results, indent=4)
         #print(json.dumps(instancia_teste.get_bound_list(), indent=4))
 
 if __name__ == "__main__":
