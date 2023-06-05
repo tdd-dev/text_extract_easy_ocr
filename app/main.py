@@ -1,10 +1,13 @@
 import sys
 import os
 import json
+import subprocess
+
 # Importa a classe ProcessUiObjectsFiles do arquivo 'process_json_files.py'
 from utils.process_json_files import ProcessUiObjectsFiles
 from utils.process_image_files import ProcessImageFiles
 from utils.test import ProcessTesting
+from utils.preprocessing_yolo import PreprocessingYOLO
 
 class AccessUtils(str):
     def __init__(self, path):
@@ -45,7 +48,46 @@ class AccessUtils(str):
         print("\n")
         print(json.dumps(test_results_by_image, indent=4))
         #print(json.dumps(instancia_teste.get_bound_list(), indent=4))
+    
+    def mainYolo(self,path):
+        project_name = "text_extract_easy_ocr"
+        model_path = r"app\utils\best.pt"
+        # main_directory = path
+        # print(os.listdir(model_path))
+        print("PATHH: ", os.path.dirname(path))
+        diretorios = path.split(os.path.sep)
+        indice = diretorios.index(project_name)
+        diretorio_pai = os.path.sep.join(diretorios[:indice+1])
+        print("PAAATHH: ", diretorio_pai, path)
+        print(os.listdir(diretorio_pai))
+        
+        status_bar_folder = "status-bar"
+        path_status_bar = os.path.join(path, status_bar_folder)
+        teste_classe = PreprocessingYOLO(path)
+        teste_classe.crop_images(path)
+
+        os.chdir(diretorio_pai)
+        # # os.system(r'python C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\detect.py --weights C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\best.pt --img 1300 --conf 0.20 --source C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\data\Yolo_samples\status-bar --line-thickness 1')
+        command = [
+            "python",
+            r"app\utils\detect.py",
+            "--weights",
+            model_path,
+            "--img",
+            "1300",
+            "--conf",
+            "0.20",
+            "--source",
+            path_status_bar,
+            "--line-thickness",
+            "1"
+        ]
+
+        subprocess.run(command)        
+
+
 
 if __name__ == "__main__":
     exec = AccessUtils(str)
     exec.main()
+    exec.mainYolo()

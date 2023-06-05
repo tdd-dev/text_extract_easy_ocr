@@ -124,9 +124,8 @@ class OpenInterface(QWidget):
         self.exec_utils.main(self.path)
 
     def start_yolo_process(self):
-        self.path = self.input_text.text()
-        self.execute = ProcessTextFromJsonFiles(self.path)
-        print(json.dumps(self.execute.process_text_dict(),indent=4))
+        self.exec_utils = AccessUtils(self.path)
+        self.exec_utils.mainYolo(self.path)
        
         
 if __name__ == '__main__':
