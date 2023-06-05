@@ -6,6 +6,7 @@ from PyQt5.QtGui import QFont, QPixmap
 import sys
 import os
 import json
+from utils.test import ProcessTesting
 
 class OpenInterface(QWidget):
 
@@ -53,25 +54,21 @@ class OpenInterface(QWidget):
     def display_image(self):
         self.label = QLabel(self)
         self.label.setGeometry(150, 330, 300, 450)
-        #pixmap = QPixmap(path)  # Replace "image.jpg" with the path to your image file
         pixmap = QPixmap("data/7.jpg")
         self.label.setPixmap(pixmap)
         self.label.setScaledContents(True)
+        self.label.show()
 
-    def create_json_display(self):
-        json_data = {
-            "Image 7": "PASS",
-            "Image 13": "PASS",
-            "Image 65": "PASS",
-            "Image 83": "PASS",
-            "Image 100": "PASS"
-        }
-        json_text = json.dumps(json_data, indent=4)
+    def create_json_display(self,json_data):
+        print("chegou aqui")
+        if json_data != {}:
+            print(json_data)
+            self.text_edit.setPlainText(json_data)
 
-        self.text_edit = QTextEdit(self)
-        self.text_edit.setGeometry(700, 350, 300, 300)
-        self.text_edit.setPlainText(json_text)
-        self.text_edit.setReadOnly(True)
+    def open_new_window(self):
+        self.new_win = QLabel(self)
+        self.new_win.setGeometry(700, 350, 300, 300)
+        self.new_win.show()
 
     def initUI(self):
         self.openWindow()
@@ -94,11 +91,16 @@ class OpenInterface(QWidget):
         self.btn_ocr.move(100, 250)
         self.btn_ocr.setEnabled(False)
         self.btn_ocr.clicked.connect(self.start_ocr_process)
-        # Set background color
-        self.setStyleSheet("color: rgb(255,255,255); background-color: rgb(50,50,50);")
+        # Area to show results after ocr complete the process
+        self.text_edit = QTextEdit(self)
+        self.text_edit.setGeometry(700, 350, 300, 300)
+        self.text_edit.setReadOnly(True)
+        self.text_edit.show()
+
         self.display_image()
         self.resultsLabel()
-        self.create_json_display()
+         # Set background color
+        self.setStyleSheet("color: rgb(255,255,255); background-color: rgb(50,50,50);")
 
 
     def enable_start_buttons(self):
@@ -121,7 +123,8 @@ class OpenInterface(QWidget):
 
     def start_ocr_process(self):
         self.exec_utils = AccessUtils(self.path)
-        self.exec_utils.main(self.path)
+        json_data = self.exec_utils.main(self.path)
+        self.create_json_display(json_data)
 
     def start_yolo_process(self):
         self.exec_utils = AccessUtils(self.path)
