@@ -52,7 +52,9 @@ class AccessUtils(str):
     
     def mainYolo(self,path):
         project_name = "text_extract_easy_ocr"
-        model_path = r"app\utils\best.pt"
+        # model_path = r"app\utils\best.pt"
+        model_path = os.path.join("app", "utils", "best.pt")
+
         # main_directory = path
         # print(os.listdir(model_path))
         print("PATHH: ", os.path.dirname(path))
@@ -71,7 +73,7 @@ class AccessUtils(str):
         # # os.system(r'python C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\detect.py --weights C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\best.pt --img 1300 --conf 0.20 --source C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\data\Yolo_samples\status-bar --line-thickness 1')
         command = [
             "python",
-            r"app\utils\detect.py",
+            os.path.join("app", "utils", "detect.py"),
             "--weights",
             model_path,
             "--img",
