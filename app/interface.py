@@ -1,12 +1,14 @@
-from PyQt5.QtWidgets import QTextEdit, QLabel, QApplication, QWidget, QPushButton, QLineEdit, QDesktopWidget, QVBoxLayout
+from PyQt5.QtWidgets import QTextEdit, QLabel, QApplication, QWidget, QPushButton, QLineEdit, QDesktopWidget, QProgressBar,QVBoxLayout
 from get_all_json_file_names import ProcessTextFromJsonFiles
 from main import AccessUtils
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont, QPixmap
+#from PyQt5.QtCore import QThread, pyqtSignal
 import sys
 import os
 import json
 from utils.test import ProcessTesting
+import time
 
 class OpenInterface(QWidget):
 
@@ -60,15 +62,38 @@ class OpenInterface(QWidget):
         self.label.show()
 
     def create_json_display(self,json_data):
-        print("chegou aqui")
         if json_data != {}:
-            print(json_data)
+            self.progress_bar.setFormat('Completed')
             self.text_edit.setPlainText(json_data)
+            self.progress_bar.setVisible(False)
 
     def open_new_window(self):
         self.new_win = QLabel(self)
         self.new_win.setGeometry(700, 350, 300, 300)
         self.new_win.show()
+
+    def start_progress(self):
+        self.progress_bar = QProgressBar(self)
+        self.progress_bar.setGeometry(250, 450, 200, 20)
+        self.progress_bar.setVisible(True)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setFormat('Loading... %p%')
+
+        for i in range(101):
+            loaded = False
+            self.progress_bar.setValue(i)
+            time.sleep(0.05)
+            QApplication.processEvents()
+            if i == 100:
+                self.progress_bar.setValue(i)
+                QApplication.processEvents()
+                loaded = True
+            elif i != 100:
+                self.progress_bar.setFormat('Loading... %p%')
+        if loaded:
+            self.progress_bar.setFormat('Ready!')
+            QApplication.processEvents()
+        return loaded
 
     def initUI(self):
         self.openWindow()
@@ -102,7 +127,6 @@ class OpenInterface(QWidget):
          # Set background color
         self.setStyleSheet("color: rgb(255,255,255); background-color: rgb(50,50,50);")
 
-
     def enable_start_buttons(self):
         self.path = self.input_text.text()
         self.btn_ocr.setEnabled(False)
@@ -116,21 +140,23 @@ class OpenInterface(QWidget):
             self.btn_yolo.setEnabled(False)
             print("Invalid path")
         else:
-            self.btn_ocr.setToolTip('Click here')
-            self.btn_yolo.setToolTip('Click here')
+            # self.btn_ocr.setToolTip('Click here')
+            # self.btn_yolo.setToolTip('Click here')
             self.btn_ocr.setEnabled(True)
             self.btn_yolo.setEnabled(True)
 
     def start_ocr_process(self):
-        self.exec_utils = AccessUtils(self.path)
-        json_data = self.exec_utils.main(self.path)
-        self.create_json_display(json_data)
+        if self.start_progress():
+            self.exec_utils = AccessUtils(self.path)
+            json_data = self.exec_utils.main(self.path)
+            self.create_json_display(json_data)
 
     def start_yolo_process(self):
-        self.exec_utils = AccessUtils(self.path)
-        self.exec_utils.mainYolo(self.path)
-       
-        
+        if self.start_progress():
+            self.exec_utils = AccessUtils(self.path)
+            self.exec_utils.mainYolo(self.path)
+            self.progress_bar.setVisible(False)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = OpenInterface()
