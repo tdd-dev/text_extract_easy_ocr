@@ -3,7 +3,7 @@ from get_all_json_file_names import ProcessTextFromJsonFiles
 from main import AccessUtils
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont, QPixmap
-#from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import Qt
 import sys
 import os
 import json
@@ -14,6 +14,8 @@ class OpenInterface(QWidget):
 
     def __init__(self):
         super().__init__()
+        # Command to not allow maximize window
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
         self.path = ""
         
         self.initUI()
@@ -46,6 +48,15 @@ class OpenInterface(QWidget):
         title_label.setFont(font)
         title_label.setAlignment(QtCore.Qt.AlignCenter)
 
+    def imagesLabel(self):
+        title_label = QLabel(self)
+        title_label.setText("Imagens processadas")
+        title_label.setGeometry(150, 300, 300, 50)
+        font = QFont()
+        font.setPointSize(10)
+        title_label.setFont(font)
+        title_label.setAlignment(QtCore.Qt.AlignCenter)
+
     def inputLabel(self):
         self.label = QLabel(self)
         self.label.setGeometry(50, 50, 300, 50)
@@ -55,26 +66,25 @@ class OpenInterface(QWidget):
     
     def display_image(self):
         self.label = QLabel(self)
-        self.label.setGeometry(150, 330, 300, 450)
-        pixmap = QPixmap("data/7.jpg")
-        self.label.setPixmap(pixmap)
-        self.label.setScaledContents(True)
-        self.label.show()
+        self.label.setGeometry(150, 350, 300, 450)
+        self.exec_utils = AccessUtils(self.path)
+        img_list = self.exec_utils.mainImages(self.path)
+        for img in img_list:
+            pixmap = QPixmap(img)
+            self.label.setPixmap(pixmap)
+            self.label.setScaledContents(True)
+            self.label.show()
 
     def create_json_display(self,json_data):
         if json_data != {}:
             self.progress_bar.setFormat('Completed')
             self.text_edit.setPlainText(json_data)
             self.progress_bar.setVisible(False)
-
-    def open_new_window(self):
-        self.new_win = QLabel(self)
-        self.new_win.setGeometry(700, 350, 300, 300)
-        self.new_win.show()
+            self.display_image()
 
     def start_progress(self):
         self.progress_bar = QProgressBar(self)
-        self.progress_bar.setGeometry(250, 450, 200, 20)
+        self.progress_bar.setGeometry(490, 450, 200, 20)
         self.progress_bar.setVisible(True)
         self.progress_bar.setValue(0)
         self.progress_bar.setFormat('Loading... %p%')
@@ -118,11 +128,15 @@ class OpenInterface(QWidget):
         self.btn_ocr.clicked.connect(self.start_ocr_process)
         # Area to show results after ocr complete the process
         self.text_edit = QTextEdit(self)
-        self.text_edit.setGeometry(700, 350, 300, 300)
+        self.text_edit.setGeometry(700, 350, 300, 450)
         self.text_edit.setReadOnly(True)
         self.text_edit.show()
-
-        self.display_image()
+        # Area to show images
+        self.img_edit = QTextEdit(self)
+        self.img_edit.setGeometry(150, 350, 300, 450)
+        self.img_edit.setReadOnly(True)
+        self.img_edit.show()
+        self.imagesLabel()
         self.resultsLabel()
          # Set background color
         self.setStyleSheet("color: rgb(255,255,255); background-color: rgb(50,50,50);")
@@ -148,7 +162,7 @@ class OpenInterface(QWidget):
     def start_ocr_process(self):
         if self.start_progress():
             self.exec_utils = AccessUtils(self.path)
-            json_data = self.exec_utils.main(self.path)
+            json_data = self.exec_utils.mainOcr(self.path)
             self.create_json_display(json_data)
 
     def start_yolo_process(self):
@@ -156,6 +170,7 @@ class OpenInterface(QWidget):
             self.exec_utils = AccessUtils(self.path)
             self.exec_utils.mainYolo(self.path)
             self.progress_bar.setVisible(False)
+            self.display_image()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

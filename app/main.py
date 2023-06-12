@@ -22,7 +22,7 @@ class AccessUtils(str):
     # Adiciona o diretório principal ao sys.path
     sys.path.append(project_path)
 
-    def main(self,path):
+    def mainOcr(self,path):
         instancia_teste = ProcessUiObjectsFiles(path)
         image = ProcessImageFiles(path)
         testing = ProcessTesting(path)
@@ -55,14 +55,14 @@ class AccessUtils(str):
         # model_path = r"app\utils\best.pt"
         model_path = os.path.join("app", "utils", "best.pt")
 
-        # main_directory = path
+        #main_directory = path
         # print(os.listdir(model_path))
-        print("PATHH: ", os.path.dirname(path))
+        # print("PATHH: ", os.path.dirname(path))
         diretorios = path.split(os.path.sep)
         indice = diretorios.index(project_name)
         diretorio_pai = os.path.sep.join(diretorios[:indice+1])
-        print("PAAATHH: ", diretorio_pai, path)
-        print(os.listdir(diretorio_pai))
+        # print("PAAATHH: ", diretorio_pai, path)
+        # print(os.listdir(diretorio_pai))
         
         status_bar_folder = "status-bar"
         path_status_bar = os.path.join(path, status_bar_folder)
@@ -86,11 +86,24 @@ class AccessUtils(str):
             "1"
         ]
 
-        subprocess.run(command)        
+        subprocess.run(command)
 
-
+    def mainImages(self,path):
+        getImgPath = ProcessImageFiles(path)
+        img_list = getImgPath.get_jpg_files(path)
+        new_img_list = []
+        for img in img_list:
+            index = img.find('data')
+            if index != -1:
+                result = img[index:]
+                new_img_list.append(result)
+            else:
+                print("Palavra 'data' não encontrada no path.")
+        print(new_img_list)
+        return new_img_list
 
 if __name__ == "__main__":
     exec = AccessUtils(str)
-    exec.main()
+    exec.mainOcr()
     exec.mainYolo()
+    exec.mainImages()
