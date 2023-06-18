@@ -14,8 +14,6 @@ class OpenInterface(QWidget):
 
     def __init__(self):
         super().__init__()
-        # Command to not allow maximize window
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
         self.path = ""
         self.initUI()
 
@@ -34,7 +32,7 @@ class OpenInterface(QWidget):
         img_name = image_path.split("data")[-1]
         self.name_label = QLabel(self)
         self.name_label.setGeometry(150, 800, 100, 50)
-        self.name_label.setText(img_name)
+        self.name_label.setText("Image name: "+img_name)
         self.name_label.show()
 
     def show_previous_image(self):
@@ -132,17 +130,23 @@ class OpenInterface(QWidget):
         self.inputLabel()
         # Input directory
         self.input_text = QLineEdit(self)
+        self.input_text.setPlaceholderText('Insert your data path')
         self.input_text.move(200, 200)
         self.input_text.resize(300, 30)
         self.input_text.textChanged.connect(self.enable_start_buttons)
         self.path = self.input_text.text()
         # Button to start YoLo process
-        self.btn_yolo = QPushButton('START YOLO', self)
-        self.btn_yolo.move(390, 250)
+        self.btn_yolo = QPushButton('Run YOLO', self)
+        self.btn_yolo.move(400, 250)
         self.btn_yolo.setEnabled(False)
         self.btn_yolo.clicked.connect(self.start_yolo_process)
+         # Button to start both process
+        self.btn_both = QPushButton('Run ALL', self)
+        self.btn_both.move(250, 250)
+        self.btn_both.setEnabled(False)
+        self.btn_both.clicked.connect(self.start_both_process)
         # Button to start OCR process
-        self.btn_ocr = QPushButton('START OCR', self)
+        self.btn_ocr = QPushButton('Run OCR', self)
         self.btn_ocr.move(100, 250)
         self.btn_ocr.setEnabled(False)
         self.btn_ocr.clicked.connect(self.start_ocr_process)
@@ -179,23 +183,28 @@ class OpenInterface(QWidget):
         self.path = self.input_text.text()
         self.btn_ocr.setEnabled(False)
         self.btn_yolo.setEnabled(False)
+        self.btn_both.setEnabled(False)
         if self.path == '' or self.path == ' ':
             self.btn_ocr.setEnabled(False)
             self.btn_yolo.setEnabled(False)
+            self.btn_both.setEnabled(False)
             print("Mandatory field")
         elif self.path.isnumeric():
             self.btn_ocr.setEnabled(False)
             self.btn_yolo.setEnabled(False)
+            self.btn_both.setEnabled(False)
             print("Invalid path")
         else:
             self.btn_ocr.setEnabled(True)
             self.btn_yolo.setEnabled(True)
+            self.btn_both.setEnabled(True)
 
     def start_ocr_process(self):
         if self.start_progress():
             self.exec_utils = AccessUtils(self.path)
             json_data = self.exec_utils.mainOcr(self.path)
             self.create_json_display(json_data)
+            self.show_image()
 
     def start_yolo_process(self):
         if self.start_progress():
@@ -204,6 +213,18 @@ class OpenInterface(QWidget):
             self.progress_bar.setVisible(False)
             self.back_button.setEnabled(True)
             self.next_button.setEnabled(True)
+            self.show_image()
+    
+    def start_both_process(self):
+        if self.start_progress():
+            self.exec_utils = AccessUtils(self.path)
+            self.exec_utils.mainYolo(self.path)
+            json_data = self.exec_utils.mainOcr(self.path)
+            self.create_json_display(json_data)
+            self.progress_bar.setVisible(False)
+            self.back_button.setEnabled(True)
+            self.next_button.setEnabled(True)
+            self.show_image()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
