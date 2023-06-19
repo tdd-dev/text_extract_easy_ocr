@@ -2,12 +2,15 @@ import sys
 import os
 import json
 import subprocess
+import datetime
+
 
 # Importa a classe ProcessUiObjectsFiles do arquivo 'process_json_files.py'
 from utils.process_json_files import ProcessUiObjectsFiles
 from utils.process_image_files import ProcessImageFiles
 from utils.test import ProcessTesting
 from utils.preprocessing_yolo import PreprocessingYOLO
+
 
 class AccessUtils(str):
     def __init__(self, path):
@@ -54,7 +57,7 @@ class AccessUtils(str):
         project_name = "text_extract_easy_ocr"
         # model_path = r"app\utils\best.pt"
         model_path = os.path.join("app", "utils", "best.pt")
-
+        yaml_path = os.path.join("app", "utils", "classes_statusbar.yaml")
         #main_directory = path
         # print(os.listdir(model_path))
         # print("PATHH: ", os.path.dirname(path))
@@ -63,12 +66,20 @@ class AccessUtils(str):
         diretorio_pai = os.path.sep.join(diretorios[:indice+1])
         # print("PAAATHH: ", diretorio_pai, path)
         # print(os.listdir(diretorio_pai))
-        
+
+        now = datetime.datetime.now()
+        timestamp = now.strftime("%Y-%m-%d-%H-%M-%S")
+
         status_bar_folder = "status-bar"
         path_status_bar = os.path.join(path, status_bar_folder)
         teste_classe = PreprocessingYOLO(path)
         teste_classe.crop_images(path)
 
+        path_imgs_result = os.path.join("data", "Test Results/yolo")
+        path_imgs_inferencia = os.path.join(path_imgs_result, f"exp_{timestamp}")
+        path_imgs_classes_found = os.path.join(path_imgs_inferencia, "labels")
+
+        
         os.chdir(diretorio_pai)
         # # os.system(r'python C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\detect.py --weights C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\best.pt --img 1300 --conf 0.20 --source C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\data\Yolo_samples\status-bar --line-thickness 1')
         command = [
@@ -82,11 +93,23 @@ class AccessUtils(str):
             "0.20",
             "--source",
             path_status_bar,
+            "--project",
+            path_imgs_result,
+            "--name",
+            f"exp_{timestamp}",
             "--line-thickness",
-            "1"
+            "1",
+            "--save-txt",
+            "--save-conf"
         ]
 
         subprocess.run(command)
+        # path_yaml = r'C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\classes_statusbar.yaml'
+        compare_results = PreprocessingYOLO(path)
+        compare_results.format_txt(yaml_path, path_imgs_classes_found, path_imgs_inferencia, diretorio_pai)
+        # os.chdir(diretorio_pai)
+
+
 
     def mainImages(self,path):
         getImgPath = ProcessImageFiles(path)

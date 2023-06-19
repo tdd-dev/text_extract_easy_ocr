@@ -1,0 +1,12 @@
+
+# Classes
+names:
+  0: bluetooth
+  1: wifi
+  2: battery
+  3: clock
+  4: alarm
+  5: vibrator
+  6: gps
+
+
