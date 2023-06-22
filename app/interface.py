@@ -93,9 +93,18 @@ class OpenInterface(QWidget):
         self.label.move(100, 200)
         self.label.resize(300, 30)
 
-    def create_json_display(self,json_data):
+    def show_ocr_json_results(self,json_data):
         if json_data != {}:
-            self.progress_bar.setFormat('Completed')
+            self.text_edit.setPlainText(json_data)
+            self.progress_bar.setVisible(False)
+            self.back_button.setEnabled(True)
+            self.next_button.setEnabled(True)
+
+    def show_yolo_json_results(self,path_data):
+        if path_data != {}:
+            with open(path_data) as file:
+                data = json.load(file)
+            json_data = json.dumps(data, indent=4)
             self.text_edit.setPlainText(json_data)
             self.progress_bar.setVisible(False)
             self.back_button.setEnabled(True)
@@ -174,7 +183,7 @@ class OpenInterface(QWidget):
         self.back_button.clicked.connect(self.show_previous_image)
 
         self.next_button = QPushButton('Next',self)
-        self.next_button.move(350, 850)
+        self.next_button.move(370, 850)
         self.next_button.setEnabled(False)
         self.next_button.clicked.connect(self.show_next_image)
 
@@ -203,27 +212,23 @@ class OpenInterface(QWidget):
         if self.start_progress():
             self.exec_utils = AccessUtils(self.path)
             json_data = self.exec_utils.mainOcr(self.path)
-            self.create_json_display(json_data)
+            self.show_ocr_json_results(json_data)
             self.show_image()
 
     def start_yolo_process(self):
         if self.start_progress():
             self.exec_utils = AccessUtils(self.path)
-            self.exec_utils.mainYolo(self.path)
-            self.progress_bar.setVisible(False)
-            self.back_button.setEnabled(True)
-            self.next_button.setEnabled(True)
+            path_data = self.exec_utils.mainYolo(self.path)
+            self.show_yolo_json_results(path_data)
             self.show_image()
     
     def start_both_process(self):
         if self.start_progress():
             self.exec_utils = AccessUtils(self.path)
-            self.exec_utils.mainYolo(self.path)
+            path_data = self.exec_utils.mainYolo(self.path)
+            self.show_yolo_json_results(path_data)
             json_data = self.exec_utils.mainOcr(self.path)
-            self.create_json_display(json_data)
-            self.progress_bar.setVisible(False)
-            self.back_button.setEnabled(True)
-            self.next_button.setEnabled(True)
+            self.show_ocr_json_results(json_data)
             self.show_image()
 
 if __name__ == '__main__':

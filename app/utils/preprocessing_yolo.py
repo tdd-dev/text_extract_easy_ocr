@@ -66,7 +66,7 @@ class PreprocessingYOLO(str):
             json.dump(results, file, indent=4)
     
         print(f"Os resultados foram salvos no diretorio {json_file}.")
-
+        return json_file
 
     def flush_status_bar_folder(self, path):
         pass

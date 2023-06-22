@@ -106,7 +106,7 @@ class AccessUtils(str):
         subprocess.run(command)
         # path_yaml = r'C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\classes_statusbar.yaml'
         compare_results = PreprocessingYOLO(path)
-        compare_results.format_txt(yaml_path, path_imgs_classes_found, path_imgs_inferencia, diretorio_pai)
+        return compare_results.format_txt(yaml_path, path_imgs_classes_found, path_imgs_inferencia, diretorio_pai)
         # os.chdir(diretorio_pai)
 
 
@@ -121,7 +121,7 @@ class AccessUtils(str):
                 result = img[index:]
                 new_img_list.append(result)
             else:
-                print("Palavra 'data' não encontrada no path.")
+                print("Word 'data' not found on directory path.")
         print(new_img_list)
         return new_img_list
 
