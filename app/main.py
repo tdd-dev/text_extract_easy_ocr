@@ -53,63 +53,110 @@ class AccessUtils(str):
         return json.dumps(test_results, indent=4)
         #print(json.dumps(instancia_teste.get_bound_list(), indent=4))
     
-    def mainYolo(self,path):
+
+    def mainYolo(self, path):
         project_name = "text_extract_easy_ocr"
-        # model_path = r"app\utils\best.pt"
         model_path = os.path.join("app", "utils", "best.pt")
         yaml_path = os.path.join("app", "utils", "classes_statusbar.yaml")
-        #main_directory = path
-        # print(os.listdir(model_path))
-        # print("PATHH: ", os.path.dirname(path))
+
+        # Obter o diretório pai
         diretorios = path.split(os.path.sep)
         indice = diretorios.index(project_name)
         diretorio_pai = os.path.sep.join(diretorios[:indice+1])
-        # print("PAAATHH: ", diretorio_pai, path)
-        # print(os.listdir(diretorio_pai))
 
+        # Obter o timestamp atual
         now = datetime.datetime.now()
         timestamp = now.strftime("%Y-%m-%d-%H-%M-%S")
 
+        # Definir caminhos
         status_bar_folder = "status-bar"
         path_status_bar = os.path.join(path, status_bar_folder)
-        teste_classe = PreprocessingYOLO(path)
-        teste_classe.crop_images(path)
-
         path_imgs_result = os.path.join("data", "Test Results/yolo")
         path_imgs_inferencia = os.path.join(path_imgs_result, f"exp_{timestamp}")
         path_imgs_classes_found = os.path.join(path_imgs_inferencia, "labels")
 
-        
+        # Criar uma instância de PreprocessingYOLO
+        preprocessing_yolo = PreprocessingYOLO(path)
+
+        # Realizar o pré-processamento de imagens
+        preprocessing_yolo.crop_images(path)
+
+        # Alterar o diretório para o diretório pai
         os.chdir(diretorio_pai)
-        # # os.system(r'python C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\detect.py --weights C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\best.pt --img 1300 --conf 0.20 --source C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\data\Yolo_samples\status-bar --line-thickness 1')
+
+        # Executar o comando de detecção de objetos
         command = [
             "python",
             os.path.join("app", "utils", "detect.py"),
-            "--weights",
-            model_path,
-            "--img",
-            "1300",
-            "--conf",
-            "0.20",
-            "--source",
-            path_status_bar,
-            "--project",
-            path_imgs_result,
-            "--name",
-            f"exp_{timestamp}",
-            "--line-thickness",
-            "1",
+            "--weights", model_path,
+            "--img", "1300",
+            "--conf", "0.20",
+            "--source", path_status_bar,
+            "--project", path_imgs_result,
+            "--name", f"exp_{timestamp}",
+            "--line-thickness", "1",
             "--save-txt",
             "--save-conf"
         ]
-
         subprocess.run(command)
-        # path_yaml = r'C:\Users\rafae\Documents\UFAM\IARTE_icomp\projeto_final\text_extract_easy_ocr\app\utils\classes_statusbar.yaml'
+
+        # Criar uma instância de PreprocessingYOLO para comparar resultados
         compare_results = PreprocessingYOLO(path)
+
+        # Formatar os resultados e retornar o resultado
         return compare_results.format_txt(yaml_path, path_imgs_classes_found, path_imgs_inferencia, diretorio_pai)
-        # os.chdir(diretorio_pai)
+    
+    def mainYolo2(self, path):
+        project_name = "text_extract_easy_ocr"
+        model_path = os.path.join("app", "utils", "best2.pt")
+        yaml_path = os.path.join("app", "utils", "classes_statusbar.yaml")
 
+        # Obter o diretório pai
+        diretorios = path.split(os.path.sep)
+        indice = diretorios.index(project_name)
+        diretorio_pai = os.path.sep.join(diretorios[:indice+1])
 
+        # Obter o timestamp atual
+        now = datetime.datetime.now()
+        timestamp = now.strftime("%Y-%m-%d-%H-%M-%S")
+
+        # Definir caminhos
+        status_bar_folder = "status-bar"
+        path_status_bar = os.path.join(path, status_bar_folder)
+        path_imgs_result = os.path.join("data", "Test Results/yolo")
+        path_imgs_inferencia = os.path.join(path_imgs_result, f"exp_{timestamp}_model2")
+        path_imgs_classes_found = os.path.join(path_imgs_inferencia, "labels")
+
+        # Criar uma instância de PreprocessingYOLO
+        preprocessing_yolo = PreprocessingYOLO(path)
+
+        # Realizar o pré-processamento de imagens
+        preprocessing_yolo.crop_images(path)
+
+        # Alterar o diretório para o diretório pai
+        os.chdir(diretorio_pai)
+
+        # Executar o comando de detecção de objetos
+        command = [
+            "python",
+            os.path.join("app", "utils", "detect.py"),
+            "--weights", model_path,
+            "--img", "1300",
+            "--conf", "0.20",
+            "--source", path_status_bar,
+            "--project", path_imgs_result,
+            "--name", f"exp_{timestamp}_model2",
+            "--line-thickness", "1",
+            "--save-txt",
+            "--save-conf"
+        ]
+        subprocess.run(command)
+
+        # Criar uma instância de PreprocessingYOLO para comparar resultados
+        compare_results = PreprocessingYOLO(path)
+
+        # Formatar os resultados e retornar o resultado
+        return compare_results.format_txt(yaml_path, path_imgs_classes_found, path_imgs_inferencia, diretorio_pai)
 
     def mainImages(self,path):
         getImgPath = ProcessImageFiles(path)

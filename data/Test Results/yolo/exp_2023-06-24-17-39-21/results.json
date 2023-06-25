@@ -1,0 +1,71 @@
+[
+    {
+        "arquivo": "100.txt",
+        "comparacoes": [
+            {
+                "chave": 2,
+                "valor": "battery"
+            },
+            {
+                "chave": 1,
+                "valor": "wifi"
+            }
+        ]
+    },
+    {
+        "arquivo": "13.txt",
+        "comparacoes": [
+            {
+                "chave": 2,
+                "valor": "battery"
+            },
+            {
+                "chave": 1,
+                "valor": "wifi"
+            }
+        ]
+    },
+    {
+        "arquivo": "65.txt",
+        "comparacoes": [
+            {
+                "chave": 2,
+                "valor": "battery"
+            },
+            {
+                "chave": 1,
+                "valor": "wifi"
+            }
+        ]
+    },
+    {
+        "arquivo": "7.txt",
+        "comparacoes": [
+            {
+                "chave": 2,
+                "valor": "battery"
+            },
+            {
+                "chave": 1,
+                "valor": "wifi"
+            }
+        ]
+    },
+    {
+        "arquivo": "83.txt",
+        "comparacoes": [
+            {
+                "chave": 3,
+                "valor": "clock"
+            },
+            {
+                "chave": 1,
+                "valor": "wifi"
+            },
+            {
+                "chave": 2,
+                "valor": "battery"
+            }
+        ]
+    }
+]

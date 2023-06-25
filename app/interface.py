@@ -220,6 +220,8 @@ class OpenInterface(QWidget):
             self.exec_utils = AccessUtils(self.path)
             path_data = self.exec_utils.mainYolo(self.path)
             self.show_yolo_json_results(path_data)
+            path_data2 = self.exec_utils.mainYolo2(self.path)
+            self.show_yolo_json_results(path_data2)
             self.show_image()
     
     def start_both_process(self):
